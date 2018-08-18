@@ -57,7 +57,11 @@ class NoteDatabase(context: Context) {
       beginTransaction()
       try {
         for (value in values) {
-          insert(_TABLE_NAME, null, value)
+          insert(
+              _TABLE_NAME,
+              null,
+              value
+          )
         }
         setTransactionSuccessful()
       } finally {
@@ -96,18 +100,18 @@ class NoteDatabase(context: Context) {
   }
 
   private fun allFromCursor(cursor: Cursor): List<Note> {
-    val retval = ArrayList<Note>()
-    while (cursor.moveToNext()) {
-      retval.add(fromCursor(cursor))
+    return mutableListOf<Note>().apply {
+      while (cursor.moveToNext()) {
+        add(fromCursor(cursor))
+      }
     }
-    return retval
   }
 
   private fun fromNote(note: Note): ContentValues {
     return ContentValues().apply {
-      val id = note.id
-      if (id != -1) {
-        put(_ID, id)
+      val noteId = note.id
+      if (noteId != -1) {
+        put(_ID, noteId)
       }
       put(TEXT, note.text)
       put(IS_PINNED, note.isPinned)
@@ -117,10 +121,6 @@ class NoteDatabase(context: Context) {
   }
 
   private fun fromNotes(notes: Array<out Note>): List<ContentValues> {
-    val values = ArrayList<ContentValues>()
-    for (note in notes) {
-      values.add(fromNote(note))
-    }
-    return values
+    return notes.map(this::fromNote)
   }
 }
